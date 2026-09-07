@@ -19,7 +19,7 @@ async def list_apps(params: ListAppRecordParams, ctx) -> ActionResult:
             rid = str(r.get("id") or r.get("key") or r.get("uuid") or "unknown")
             rname = r.get("name") or r.get("title") or r.get("label") or rid
             items.append({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r})
-        return ActionResult.ok({"apps": items, "total": len(items)}, summary=f"Found {len(items)} apps.")
+        return ActionResult.success({"apps": items, "total": len(items)}, summary=f"Found {len(items)} apps.")
     except Exception as e:
         return ActionResult.error(f"Error listing apps: {e}")
 
@@ -30,7 +30,7 @@ async def get_apprecord(params: GetAppRecordParams, ctx) -> ActionResult:
         r = await client.get_apprecord(params.apprecord_id)
         rid = str(r.get("id") or params.apprecord_id)
         rname = r.get("name") or r.get("title") or rid
-        return ActionResult.ok({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved AppRecord {rid}.")
+        return ActionResult.success({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved AppRecord {rid}.")
     except Exception as e:
         return ActionResult.error(f"Error retrieving AppRecord: {e}")
 
@@ -39,7 +39,7 @@ async def audit_apprecord_health(params: ConnectionIdParams, ctx) -> ActionResul
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_apps(limit=50)
-        return ActionResult.ok({
+        return ActionResult.success({
             "healthy": True,
             "total_apps": len(items),
             "details": {"sample_count": len(items)},
