@@ -10,7 +10,7 @@ from schemas import (
 from handlers_connection import resolve_client
 
 @chat.function("list_apps", "List apps in Bubble.", action_type="read", chain_callable=True, event="bubble-connector.list_apps", effects=["read:apps"], data_model=AppRecordList)
-async def list_apps(params: ListAppRecordParams, ctx) -> ActionResult:
+async def list_apps(ctx, params: ListAppRecordParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         raw_items = await client.list_apps(limit=params.limit)
@@ -24,7 +24,7 @@ async def list_apps(params: ListAppRecordParams, ctx) -> ActionResult:
         return ActionResult.error(f"Error listing apps: {e}")
 
 @chat.function("get_apprecord", "Get details of one AppRecord in Bubble.", action_type="read", chain_callable=True, event="bubble-connector.get_apprecord", effects=["read:apprecord"], data_model=AppRecordRecord)
-async def get_apprecord(params: GetAppRecordParams, ctx) -> ActionResult:
+async def get_apprecord(ctx, params: GetAppRecordParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         r = await client.get_apprecord(params.apprecord_id)
@@ -35,7 +35,7 @@ async def get_apprecord(params: GetAppRecordParams, ctx) -> ActionResult:
         return ActionResult.error(f"Error retrieving AppRecord: {e}")
 
 @chat.function("audit_apprecord_health", "Audit health of Bubble apps and connectivity.", action_type="read", chain_callable=True, event="bubble-connector.audit_apprecord_health", effects=["read:audit"], data_model=AuditHealthReport)
-async def audit_apprecord_health(params: ConnectionIdParams, ctx) -> ActionResult:
+async def audit_apprecord_health(ctx, params: ConnectionIdParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_apps(limit=50)
